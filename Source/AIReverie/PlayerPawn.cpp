@@ -35,6 +35,7 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 bool APlayerPawn::CanIMoveForward()
 {
 	FVector Start = GetActorLocation();
+	// This should be 15 units directly ahead of me
 	FVector End = Start + (GetActorForwardVector() * 15.0);		
 	FHitResult OutHit;
 	FCollisionQueryParams CollisionParams;
@@ -60,12 +61,15 @@ void APlayerPawn::RandomRotate()
 }
 
 void APlayerPawn::SaveAllActorsInView(TArray<AActor*> ActorsFound, int WhichScreenshot)
-{
+{	
+
 	FString SaveOutString;
 	FString FileLocation;
-	bool IsFirst = true;
+	bool IsFirst = true;	
+	// The Comparisons to build this list were simpler to deal with in Blueprints
 	for (AActor* ThisActor : ActorsFound)
 	{
+		// Trying not to have a trailing comma
 		if (!IsFirst)
 		{
 			SaveOutString.Append(", ");
@@ -73,11 +77,12 @@ void APlayerPawn::SaveAllActorsInView(TArray<AActor*> ActorsFound, int WhichScre
 
 		SaveOutString.Append(ThisActor->GetName());	
 		IsFirst = false;
-	}	
+	}
+	// Figuring out where this was stored took entirely too long
 	FileLocation = GetDefault<UEngine>()->GameScreenshotSaveDirectory.Path;
 	FileLocation.Append("/image_");
 	FileLocation.AppendInt(WhichScreenshot);
 	FileLocation.Append("_actors.txt");
-	FFileHelper::SaveStringToFile(SaveOutString, *FileLocation);
-	int x = 3;
+	// Easiest way I found to do this - defaults to overwriting if the file doesn't exist, creating if it does
+	FFileHelper::SaveStringToFile(SaveOutString, *FileLocation);	
 }
